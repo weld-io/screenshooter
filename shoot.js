@@ -19,6 +19,6 @@ http.createServer(function (req, res) {
       });
     });
   });
-}).listen(1337, '127.0.0.1');
+}).listen(process.env.PORT || 1337, '127.0.0.1');
 
 console.log('Server running at port 1337');
