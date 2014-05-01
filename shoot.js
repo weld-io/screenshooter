@@ -15,7 +15,7 @@ http.createServer(function (req, res) {
             res.end(imageBuffer);
             ph.exit()
           });
-        }, 2000);
+        }, 1000);
       });
     });
   });
