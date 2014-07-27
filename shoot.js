@@ -6,7 +6,7 @@ var requests = [];
 
 // Request the current page and send back as png
 // Then process next request in queue if there is one
-var process = function(req, res){
+var processRequest = function(req, res){
 	if(req && res){
 		processing = true;
 		phantom.create(function(err,ph) {
@@ -21,7 +21,7 @@ var process = function(req, res){
 								'Content-Length': imageBuffer.length});
 							res.end(imageBuffer);
 							ph.exit()
-							process.apply(null, requests.shift());
+							processRequest.apply(null, requests.shift());
 						});
 					}, 1000);
 				});
@@ -36,7 +36,7 @@ var process = function(req, res){
 // Else put into queue
 http.createServer(function (req, res) {
 	if(!processing){
-		process(req, res);
+		processRequest(req, res);
 	} else {
 		requests.push([req, res]);
 	}
