@@ -11,6 +11,10 @@ var processRequest = function(req, res){
 		processing = true;
 		phantom.create(function(err,ph) {
 			return ph.createPage(function(err, page) {
+				page.set('viewportSize', {
+					width: 1024,
+					height: 1024
+				});
 				return page.open(req.url.slice(1), function(err, status) {
 					//Wait for a bit for AJAX content to load on the page. Better solution?
 					setTimeout(function() {
