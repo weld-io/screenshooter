@@ -37,7 +37,7 @@ var processRequest = function(req, res){
 http.createServer(function (req, res) {
 	if(!processing){
 		processRequest(req, res);
-	} else if requests.length > 10 {
+	} else if (requests.length > 10) {
 		requests = [];
 		processRequest(req, res);
 	} else {
