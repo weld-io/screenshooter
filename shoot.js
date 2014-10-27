@@ -16,6 +16,7 @@ var processRequest = function(req, res){
 					height: 1024
 				});
 				return page.open(req.url.slice(1), function(err, status) {
+					console.log('status: ', status);
 					//Wait for a bit for AJAX content to load on the page. Better solution?
 					setTimeout(function() {
 						page.renderBase64("PNG", function(error, result){
@@ -29,7 +30,7 @@ var processRequest = function(req, res){
 						});
 					}, 1000);
 				});
-			});
+			}, {parameters: {'ignore-ssl-errors': 'yes'}});
 		});
 	} else {
 		processing = false;
