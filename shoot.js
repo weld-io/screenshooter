@@ -15,6 +15,17 @@ var processRequest = function(req, res){
 					width: 1024,
 					height: 1024
 				});
+				page.onError = function(msg, trace) {
+					var msgStack = ['ERROR: ' + msg];
+					if (trace && trace.length) {
+						msgStack.push('TRACE:');
+						trace.forEach(function(t) {
+							msgStack.push(' -> ' + t.file + ': ' + t.line + (t.function ? ' (in function "' + t.function + '")' : ''));
+						});
+					}
+					// uncomment to log into the console
+					console.error(msgStack.join('\n'));
+				};
 				return page.open(req.url.slice(1), function(err, status) {
 					console.log('status: ', status);
 					//Wait for a bit for AJAX content to load on the page. Better solution?
