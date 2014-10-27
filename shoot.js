@@ -29,7 +29,7 @@ var processRequest = function(req, res){
 						});
 					}, 1000);
 				});
-			});
+			}, {parameters: {'ignore-ssl-errors': 'yes'}});
 		});
 	} else {
 		processing = false;
