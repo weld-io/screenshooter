@@ -4,6 +4,7 @@
   "description": "serve screenshots of webpages",
   "main": "shoot.js",
   "dependencies": {
+    "lwip": "0.0.5",
     "node-phantom-simple": "1.2.0"
   },
   "devDependencies": {},
