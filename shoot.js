@@ -1,28 +1,20 @@
 var http = require('http');
 var phantom = require('node-phantom-simple');
-var lwip = require('lwip');
+var gm = require('gm');
+var url = require('url');
 
 var processing = false;
 var requests = [];
 
-var processImage = function(res, result, ph){
+var processImage = function(res, result, ph, imageWidth){
 	var imageBuffer = new Buffer(result, 'base64');
-	lwip.open(imageBuffer, 'jpg', function(err, image){
-		if (image) {
-			image.scale(0.234375, function(err, image){
-				image.toBuffer('jpg', function(err, imageBuffer){
-					res.writeHead(200, {
-						'Content-Type': 'image/jpg',
-						'Content-Length': imageBuffer.length});
-					res.end(imageBuffer);
-					ph.exit()
-					processRequest.apply(null, requests.shift());
-				});
-			});
-		} else {
-			console.log(err);
-			res.send(500);
-		}
+	gm(imageBuffer, 'image.jpg').trim().resize(imageWidth || 240).toBuffer('JPG', function(err, newBuffer){
+		res.writeHead(200, {
+			'Content-Type': 'image/jpg',
+			'Content-Length': newBuffer.length});
+		res.end(newBuffer);
+		ph.exit()
+		processRequest.apply(null, requests.shift());
 	});
 }
 
@@ -30,6 +22,7 @@ var processImage = function(res, result, ph){
 // Then process next request in queue if there is one
 var processRequest = function(req, res){
 	if(req && res){
+		var queryStrings = url.parse(req.url, true).query;
 		processing = true;
 		phantom.create(function(err,ph) {
 			return ph.createPage(function(err, page) {
@@ -40,7 +33,7 @@ var processRequest = function(req, res){
 				return page.open(req.url.slice(1), function(err, status) {
 					page.renderBase64("JPEG", function(error, result){
 						if (result) {
-							processImage(res, result, ph);
+							processImage(res, result, ph, queryStrings.imageWidth);
 						} else {
 							console.log(error);
 							res.send(500);
