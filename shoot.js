@@ -6,11 +6,11 @@ var url = require('url');
 var processing = false;
 var requests = [];
 
-var processImage = function(res, result, ph, imageWidth){
+var processImage = function(res, result, ph, imageWidth, imageFormat){
 	var imageBuffer = new Buffer(result, 'base64');
-	gm(imageBuffer, 'image.jpg').trim().resize(imageWidth || 240).toBuffer('JPG', function(err, newBuffer){
+	gm(imageBuffer, 'image.jpg').trim().resize(imageWidth || 240).toBuffer(imageFormat || 'JPG', function(err, newBuffer){
 		res.writeHead(200, {
-			'Content-Type': 'image/jpg',
+			'Content-Type': 'image/' + imageFormat || 'jpg',
 			'Content-Length': newBuffer.length});
 		res.end(newBuffer);
 		ph.exit()
@@ -31,9 +31,9 @@ var processRequest = function(req, res){
 					height: 1024
 				});
 				return page.open(req.url.slice(1), function(err, status) {
-					page.renderBase64("JPEG", function(error, result){
+					page.renderBase64(queryStrings.imageFormat || "JPEG", function(error, result){
 						if (result) {
-							processImage(res, result, ph, queryStrings.imageWidth);
+							processImage(res, result, ph, queryStrings.imageWidth, queryStrings.imageFormat);
 						} else {
 							console.log(error);
 							res.send(500);
