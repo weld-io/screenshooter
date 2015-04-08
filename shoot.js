@@ -10,7 +10,7 @@ var processImage = function(res, result, ph, imageWidth, imageFormat){
 	var imageBuffer = new Buffer(result, 'base64');
 	gm(imageBuffer, 'image.jpg').trim().resize(imageWidth || 240).toBuffer(imageFormat || 'JPG', function(err, newBuffer){
 		res.writeHead(200, {
-			'Content-Type': 'image/' + imageFormat || 'jpg',
+			'Content-Type': 'image/' + (imageFormat || 'jpg'),
 			'Content-Length': newBuffer.length});
 		res.end(newBuffer);
 		ph.exit()
