@@ -31,14 +31,16 @@ var processRequest = function(req, res){
 					height: 1024
 				});
 				return page.open(req.url.slice(1), function(err, status) {
-					page.renderBase64(queryStrings.imageFormat || "JPEG", function(error, result){
-						if (result) {
-							processImage(res, result, ph, queryStrings.imageWidth, queryStrings.imageFormat);
-						} else {
-							console.log(error);
-							res.send(500);
-						}
-					});
+					setTimeout(function(){
+						page.renderBase64(queryStrings.imageFormat || "JPEG", function(error, result){
+							if (result) {
+								processImage(res, result, ph, queryStrings.imageWidth, queryStrings.imageFormat);
+							} else {
+								console.log(error);
+								res.send(500);
+							}
+						});
+					},2000);
 
 				});
 			}, {parameters: {'ignore-ssl-errors': 'yes'}});
