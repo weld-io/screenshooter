@@ -1,6 +1,6 @@
 {
   "name": "screenshooter",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "serve screenshots of webpages",
   "main": "shoot.js",
   "dependencies": {
@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/hankmander/screenshooter/issues"
   },
-  "homepage": "https://github.com/hankmander/screenshooter"
+  "homepage": "https://github.com/hankmander/screenshooter",
+  "engines": {
+    "node": "4.1.1"
+  }
 }
