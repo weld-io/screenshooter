@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/hankmander/screenshooter",
   "engines": {
-    "node": "4.1.1"
+    "node": "^4.2.1"
   }
 }
