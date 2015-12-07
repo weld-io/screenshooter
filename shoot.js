@@ -11,7 +11,8 @@ var processImage = function(res, result, ph, imageWidth, imageFormat){
 	gm(imageBuffer, 'image.jpg').trim().resize(imageWidth || 240).toBuffer(imageFormat || 'JPG', function(err, newBuffer){
 		res.writeHead(200, {
 			'Content-Type': 'image/' + (imageFormat || 'jpg'),
-			'Content-Length': newBuffer.length});
+			'Content-Length': newBuffer.length,
+			'Cache-Control': 'public, max-age=31536000'});
 		res.end(newBuffer);
 		ph.exit()
 		processRequest.apply(null, requests.shift());
