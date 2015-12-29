@@ -12,7 +12,7 @@ var requests = [];
 
 var defaultOptions = {
 	imageWidth: 240,
-	imageHeight: undefined,
+	imageHeight: 240,
 	imageFormat: 'jpg',
 	browserWidth: 1024,
 	browserHeight: 1024,
@@ -20,15 +20,20 @@ var defaultOptions = {
 
 var processImage = function(res, imageData, ph, imageOptions){
 	var imageBuffer = new Buffer(imageData, 'base64');
-	gm(imageBuffer, 'image.' + imageOptions.imageFormat).trim().resize(imageOptions.imageWidth, imageOptions.imageHeight).toBuffer(imageOptions.imageFormat.toUpperCase(), function(err, newImageBuffer){
-		res.writeHead(200, {
-			'Content-Type': 'image/' + imageOptions.imageFormat,
-			'Content-Length': newImageBuffer.length,
-			'Cache-Control': 'public, max-age=31536000'});
-		res.end(newImageBuffer);
-		ph.exit();
-		processRequest.apply(null, requests.shift());
-	});
+	// Resize options: %, @, !, < or > see http://aheckmann.github.io/gm/docs.html
+	gm(imageBuffer, 'image.' + imageOptions.imageFormat)
+		.gravity('Center')
+		.resize(imageOptions.imageWidth, imageOptions.imageHeight, '^')
+		.crop(imageOptions.imageWidth, imageOptions.imageHeight)
+		.toBuffer(imageOptions.imageFormat.toUpperCase(), function(err, newImageBuffer){
+			res.writeHead(200, {
+				'Content-Type': 'image/' + imageOptions.imageFormat,
+				'Content-Length': newImageBuffer.length,
+				'Cache-Control': 'public, max-age=31536000'});
+			res.end(newImageBuffer);
+			ph.exit();
+			processRequest.apply(null, requests.shift());
+		});
 }
 
 // Request the current page and send back as png
@@ -36,7 +41,8 @@ var processImage = function(res, imageData, ph, imageOptions){
 var processRequest = function(req, res){
 	if(req && res){
 		var pageURL = req.url.slice(1);
-		var imageOptions = _.merge(defaultOptions, url.parse(req.url, true).query);
+		var imageOptions = _.merge({}, defaultOptions);
+		_.merge(imageOptions, url.parse(req.url, true).query);
 		console.log('Process page:', pageURL, imageOptions);
 		processing = true;
 		phantom.create(function(err,ph) {
@@ -46,7 +52,8 @@ var processRequest = function(req, res){
 					height: imageOptions.browserHeight
 				});
 				return page.open(pageURL, function(err, status) {
-					page.renderBase64((imageOptions.imageFormat === 'jpg' ? 'JPEG' : imageOptions.imageFormat.toUpperCase()), function(error, imageData){
+					var renderImageFormat = imageOptions.imageFormat === 'jpg' ? 'JPEG' : imageOptions.imageFormat.toUpperCase();
+					page.renderBase64(renderImageFormat, function(error, imageData){
 						if (imageData) {
 							processImage(res, imageData, ph, imageOptions);
 						} else {
