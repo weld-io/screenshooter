@@ -26,9 +26,9 @@ var workingOnQueue = false;
 
 var formatImage = function(imageData, imageOptions, callback){
 	var imageBuffer = new Buffer(imageData, 'base64');
-	// Resize options: %, @, !, < or > see http://aheckmann.github.io/gm/docs.html
+	// GraphicsMagick options: see http://aheckmann.github.io/gm/docs.html
 	gm(imageBuffer, 'image.' + imageOptions.imageFormat)
-		.gravity('Center')
+		.gravity('North')
 		.resize(imageOptions.imageWidth, imageOptions.imageHeight, '^')
 		.crop(imageOptions.imageWidth, imageOptions.imageHeight)
 		.toBuffer(imageOptions.imageFormat.toUpperCase(), callback);
