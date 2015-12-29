@@ -16,6 +16,7 @@ var defaultOptions = {
 	imageFormat: 'jpg',
 	browserWidth: 1024,
 	browserHeight: 1024,
+	gravity: 'North',
 };
 
 var MAX_PARALLELL_JOBS = (process.env['MAX_PARALLELL_JOBS'] ? parseInt(process.env['MAX_PARALLELL_JOBS']) : 3);
@@ -28,7 +29,7 @@ var formatImage = function(imageData, imageOptions, callback){
 	var imageBuffer = new Buffer(imageData, 'base64');
 	// GraphicsMagick options: see http://aheckmann.github.io/gm/docs.html
 	gm(imageBuffer, 'image.' + imageOptions.imageFormat)
-		.gravity('North')
+		.gravity(imageOptions.gravity)
 		.resize(imageOptions.imageWidth, imageOptions.imageHeight, '^')
 		.crop(imageOptions.imageWidth, imageOptions.imageHeight)
 		.toBuffer(imageOptions.imageFormat.toUpperCase(), callback);
@@ -97,24 +98,31 @@ var processHTTPRequest = function (req, res, callback) {
 	requestsBeingProcessed++;
 	console.log('processHTTPRequest:', requestsBeingProcessed, pageURL);
 
-	renderUrlToImage(pageURL, imageOptions, function (err, imageBuffer) {
-		requestsBeingProcessed--;
-		if (!err) {
-			res.writeHead(200, {
-				'Content-Type': 'image/' + imageOptions.imageFormat,
-				'Content-Length': imageBuffer.length,
-				'Cache-Control': 'public, max-age=31536000'});
-			res.end(imageBuffer);
-		}
-		else {
-			console.log('Image render error:', err);
-			if (res.send)
-				res.send(500);
-			else
-				res.end();
-		}
-		if (callback) callback(err);
-	});
+	if (pageURL.indexOf('http') === -1) {
+		// No URL
+		if (callback) callback('Not valid URL');
+	}
+	else {
+		renderUrlToImage(pageURL, imageOptions, function (err, imageBuffer) {
+			requestsBeingProcessed--;
+			if (!err) {
+				res.writeHead(200, {
+					'Content-Type': 'image/' + imageOptions.imageFormat,
+					'Content-Length': imageBuffer.length,
+					'Cache-Control': 'public, max-age=31536000'});
+				res.end(imageBuffer);
+			}
+			else {
+				console.log('Image render error:', err);
+				if (res.send)
+					res.send(500);
+				else
+					res.end();
+			}
+			if (callback) callback(err);
+		});		
+	}
+
 };
 
 // Take a request object and work on it
