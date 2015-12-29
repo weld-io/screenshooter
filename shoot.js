@@ -15,6 +15,7 @@ var defaultOptions = {
 	browserHeight: 1024,
 };
 
+var phantomInstance;
 var MAX_PARALLELL_JOBS = 3;
 var requestsBeingProcessed = 0;
 var requestQueue = [];
@@ -32,22 +33,18 @@ var formatImage = function(imageData, imageOptions, callback){
 
 // Take URL, deliver image buffer
 var renderUrlToImage = function (url, imageOptions, callback) {
-	var phantomInstance;
 	var lastTime = Date.now();
 
 	var logTimestamp = function (msg) {
-		console.log('%s %s (%d)', msg, url, (Date.now() - lastTime));
+		console.log('%s: %s (%d)', msg, url, (Date.now() - lastTime));
 		lastTime = Date.now();
 	};
 
 	async.waterfall([
-		// Init PhantomJS
-		phantom.create,
 		// Create page
-		function (ph, cbWaterfall) {
+		function (cbWaterfall) {
 			logTimestamp('Create page');
-			phantomInstance = ph;
-			ph.createPage(cbWaterfall, {parameters: {'ignore-ssl-errors': 'yes'}});
+			phantomInstance.createPage(cbWaterfall, {parameters: {'ignore-ssl-errors': 'yes'}});
 		},
 		// Open URL
 		function (page, cbWaterfall) {
@@ -70,12 +67,6 @@ var renderUrlToImage = function (url, imageOptions, callback) {
 		function (imageData, cbWaterfall) {
 			logTimestamp('Format image');
 			formatImage(imageData, imageOptions, cbWaterfall);
-		},
-		// Close PhantomJS
-		function (imageBuffer, cbWaterfall) {
-			logTimestamp('Close PhantomJS');
-			phantomInstance.exit();
-			cbWaterfall(null, imageBuffer);
 		},
 	],
 	callback);
@@ -138,11 +129,18 @@ var onIncomingHTTPRequest = function (req, res) {
 	}
 };
 
+// Init PhantomJS
+phantom.create(function (err, ph) {
+	phantomInstance = ph;
+});
+
+
 // Start server
 var serverPort = process.env.PORT || 1337;
 var server = http.createServer(onIncomingHTTPRequest);
 
 server.on('close', function () {
+	phantomInstance.exit();
 	console.log('Closed');
 });
 
