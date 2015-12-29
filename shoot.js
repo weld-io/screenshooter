@@ -18,7 +18,6 @@ var defaultOptions = {
 	browserHeight: 1024,
 };
 
-var thePhantomInstance;
 var MAX_PARALLELL_JOBS = (process.env['MAX_PARALLELL_JOBS'] ? parseInt(process.env['MAX_PARALLELL_JOBS']) : 3);
 var VERBOSE_LOGGING = (process.env['VERBOSE_LOGGING'] === 'false' ? false : true);
 var requestsBeingProcessed = 0;
@@ -45,10 +44,14 @@ var renderUrlToImage = function (url, imageOptions, callback) {
 		lastTime = Date.now();
 	};
 
+	var thePhantomInstance;
 	async.waterfall([
+		// Init PhantomJS every request - saves RAM?
+		phantom.create,
 		// Create page
-		function (cbWaterfall) {
+		function (ph, cbWaterfall) {
 			logTimestamp('Create page');
+			thePhantomInstance = ph;
 			thePhantomInstance.createPage(cbWaterfall, {parameters: {'ignore-ssl-errors': 'yes'}});
 		},
 		// Open URL
@@ -74,7 +77,10 @@ var renderUrlToImage = function (url, imageOptions, callback) {
 			formatImage(imageData, imageOptions, cbWaterfall);
 		},
 	],
-	callback);
+	function (err, results) {
+		thePhantomInstance.exit();
+		callback(err, results);
+	});
 };
 
 // Save image to disk
@@ -102,7 +108,10 @@ var processHTTPRequest = function (req, res, callback) {
 		}
 		else {
 			console.log('Image render error:', err);
-			res.send(500);
+			if (res.send)
+				res.send(500);
+			else
+				res.end();
 		}
 		if (callback) callback(err);
 	});
@@ -183,26 +192,17 @@ var startWebServer = function () {
 	var serverPort = process.env.PORT || 1337;
 	var server = http.createServer(onIncomingHTTPRequest);
 
-	server.on('close', function () {
-		thePhantomInstance.exit();
-		console.log('Closed');
-	});
-
 	server.listen(serverPort, function () {
 		console.log('Screenshooter service running on http://localhost:' + serverPort);
 	});
 };
 
-// Init PhantomJS
-phantom.create(function (err, ph) {
-	thePhantomInstance = ph;
-
-	if (process.argv.length >= 3) {
-		// Run as command line
-		processCommandLine();
-	}
-	else {
-		// Else web server
-		startWebServer();
-	}
-});
+// Main loop
+if (process.argv.length >= 3) {
+	// Run as command line
+	processCommandLine();
+}
+else {
+	// Else web server
+	startWebServer();
+}
