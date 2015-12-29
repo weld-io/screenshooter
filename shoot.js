@@ -190,8 +190,7 @@ var processCommandLine = function () {
 				var fileName = imageOptions.fileName || 'file.png';
 				saveImageBufferToDisk(fileName, imageBuffer, cbWaterfall);
 			},
-		],
-		thePhantomInstance.exit
+		]
 	);
 };
 
