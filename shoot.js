@@ -1,3 +1,7 @@
+'use strict';
+
+var _ = require('lodash');
+var async = require('async');
 var http = require('http');
 var phantom = require('node-phantom-simple');
 var gm = require('gm');
@@ -6,15 +10,23 @@ var url = require('url');
 var processing = false;
 var requests = [];
 
-var processImage = function(res, result, ph, imageWidth, imageFormat){
-	var imageBuffer = new Buffer(result, 'base64');
-	gm(imageBuffer, 'image.jpg').trim().resize(imageWidth || 240).toBuffer(imageFormat || 'JPG', function(err, newBuffer){
+var defaultOptions = {
+	imageWidth: 240,
+	imageHeight: undefined,
+	imageFormat: 'jpg',
+	browserWidth: 1024,
+	browserHeight: 1024,
+};
+
+var processImage = function(res, imageData, ph, imageOptions){
+	var imageBuffer = new Buffer(imageData, 'base64');
+	gm(imageBuffer, 'image.' + imageOptions.imageFormat).trim().resize(imageOptions.imageWidth, imageOptions.imageHeight).toBuffer(imageOptions.imageFormat.toUpperCase(), function(err, newImageBuffer){
 		res.writeHead(200, {
-			'Content-Type': 'image/' + (imageFormat || 'jpg'),
-			'Content-Length': newBuffer.length,
+			'Content-Type': 'image/' + imageOptions.imageFormat,
+			'Content-Length': newImageBuffer.length,
 			'Cache-Control': 'public, max-age=31536000'});
-		res.end(newBuffer);
-		ph.exit()
+		res.end(newImageBuffer);
+		ph.exit();
 		processRequest.apply(null, requests.shift());
 	});
 }
@@ -23,18 +35,20 @@ var processImage = function(res, result, ph, imageWidth, imageFormat){
 // Then process next request in queue if there is one
 var processRequest = function(req, res){
 	if(req && res){
-		var queryStrings = url.parse(req.url, true).query;
+		var pageURL = req.url.slice(1);
+		var imageOptions = _.merge(defaultOptions, url.parse(req.url, true).query);
+		console.log('Process page:', pageURL, imageOptions);
 		processing = true;
 		phantom.create(function(err,ph) {
 			return ph.createPage(function(err, page) {
 				page.set('viewportSize', {
-					width: 1024,
-					height: 1024
+					width: imageOptions.browserWidth,
+					height: imageOptions.browserHeight
 				});
-				return page.open(req.url.slice(1), function(err, status) {
-					page.renderBase64(queryStrings.imageFormat || "JPEG", function(error, result){
-						if (result) {
-							processImage(res, result, ph, queryStrings.imageWidth, queryStrings.imageFormat);
+				return page.open(pageURL, function(err, status) {
+					page.renderBase64((imageOptions.imageFormat === 'jpg' ? 'JPEG' : imageOptions.imageFormat.toUpperCase()), function(error, imageData){
+						if (imageData) {
+							processImage(res, imageData, ph, imageOptions);
 						} else {
 							console.log(error);
 							res.send(500);
@@ -61,5 +75,5 @@ http.createServer(function (req, res) {
 		requests.push([req, res]);
 	}
 }).listen(process.env.PORT || 1337, function(){
-	console.log('running');
+	console.log('Screenshooter running on http://localhost:' + (process.env.PORT || 1337));
 });
