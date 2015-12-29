@@ -19,7 +19,8 @@ var defaultOptions = {
 };
 
 var phantomInstance;
-var MAX_PARALLELL_JOBS = 3;
+var MAX_PARALLELL_JOBS = (process.env['MAX_PARALLELL_JOBS'] ? parseInt(process.env['MAX_PARALLELL_JOBS']) : 3);
+var VERBOSE_LOGGING = (process.env['VERBOSE_LOGGING'] === 'false' ? false : true);
 var requestsBeingProcessed = 0;
 var requestQueue = [];
 var workingOnQueue = false;
@@ -39,7 +40,8 @@ var renderUrlToImage = function (url, imageOptions, callback) {
 	var lastTime = Date.now();
 
 	var logTimestamp = function (msg) {
-		console.log('%s: %s (%d)', msg, url, (Date.now() - lastTime));
+		if (VERBOSE_LOGGING)
+			console.log('%s: %s (%d)', msg, url, (Date.now() - lastTime));
 		lastTime = Date.now();
 	};
 
@@ -87,6 +89,7 @@ var processHTTPRequest = function (req, res, callback) {
 	var imageOptions = _.merge({}, defaultOptions);
 	_.merge(imageOptions, url.parse(req.url, true).query);
 	requestsBeingProcessed++;
+	console.log('processHTTPRequest:', requestsBeingProcessed, pageURL);
 
 	renderUrlToImage(pageURL, imageOptions, function (err, imageBuffer) {
 		requestsBeingProcessed--;
@@ -99,7 +102,7 @@ var processHTTPRequest = function (req, res, callback) {
 		}
 		else {
 			console.log('Image render error:', err);
-			res.json(500);
+			res.send(500);
 		}
 		if (callback) callback(err);
 	});
@@ -111,8 +114,9 @@ var addToRequestQueue = function (req, res) {
 	// Start working on queue if not doing it already
 	if (!workingOnQueue) {
 		workingOnQueue = true;
+		// While: 1) there is spare capacity, and 2) there is work in the queue
 		async.whilst(
-			function () { return requestQueue.length > 0; },
+			function () { return requestsBeingProcessed < MAX_PARALLELL_JOBS && requestQueue.length > 0; },
 			function (callback) {
 				console.log('Working on: %d, in queue: %d', requestsBeingProcessed, requestQueue.length);
 				var firstRequest = requestQueue.shift();
@@ -120,6 +124,7 @@ var addToRequestQueue = function (req, res) {
 				callback(null);
 			},
 			function (err, results) {
+				console.log('Done. Working on: %d, in queue: %d', requestsBeingProcessed, requestQueue.length);
 				workingOnQueue = false;
 			}
 		);		
