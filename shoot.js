@@ -18,7 +18,7 @@ var defaultOptions = {
 	browserHeight: 1024,
 };
 
-var phantomInstance;
+var thePhantomInstance;
 var MAX_PARALLELL_JOBS = (process.env['MAX_PARALLELL_JOBS'] ? parseInt(process.env['MAX_PARALLELL_JOBS']) : 3);
 var VERBOSE_LOGGING = (process.env['VERBOSE_LOGGING'] === 'false' ? false : true);
 var requestsBeingProcessed = 0;
@@ -49,7 +49,7 @@ var renderUrlToImage = function (url, imageOptions, callback) {
 		// Create page
 		function (cbWaterfall) {
 			logTimestamp('Create page');
-			phantomInstance.createPage(cbWaterfall, {parameters: {'ignore-ssl-errors': 'yes'}});
+			thePhantomInstance.createPage(cbWaterfall, {parameters: {'ignore-ssl-errors': 'yes'}});
 		},
 		// Open URL
 		function (page, cbWaterfall) {
@@ -174,7 +174,7 @@ var processCommandLine = function () {
 				saveImageBufferToDisk(fileName, imageBuffer, cbWaterfall);
 			},
 		],
-		phantomInstance.exit
+		thePhantomInstance.exit
 	);
 };
 
@@ -184,7 +184,7 @@ var startWebServer = function () {
 	var server = http.createServer(onIncomingHTTPRequest);
 
 	server.on('close', function () {
-		phantomInstance.exit();
+		thePhantomInstance.exit();
 		console.log('Closed');
 	});
 
@@ -195,7 +195,7 @@ var startWebServer = function () {
 
 // Init PhantomJS
 phantom.create(function (err, ph) {
-	phantomInstance = ph;
+	thePhantomInstance = ph;
 
 	if (process.argv.length >= 3) {
 		// Run as command line
