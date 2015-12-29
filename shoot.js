@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 'use strict';
 
 var _ = require('lodash');
@@ -6,6 +8,7 @@ var http = require('http');
 var phantom = require('node-phantom-simple');
 var gm = require('gm');
 var url = require('url');
+var fs = require('fs');
 
 var defaultOptions = {
 	imageWidth: 240,
@@ -72,6 +75,12 @@ var renderUrlToImage = function (url, imageOptions, callback) {
 	callback);
 };
 
+// Save image to disk
+var saveImageBufferToDisk = function (fileName, imageBuffer, callback) {
+	console.log('Saving to disk:', fileName);
+	fs.writeFile(fileName, imageBuffer, 'binary', callback);
+};
+
 // Take a request object and work on it
 var processHTTPRequest = function (req, res, callback) {
 	var pageURL = req.url.slice(1);
@@ -129,21 +138,66 @@ var onIncomingHTTPRequest = function (req, res) {
 	}
 };
 
+var processCommandLine = function () {
+	var imageOptions = _.merge({}, defaultOptions);
+	async.waterfall([
+			// Process arguments
+			function (cbWaterfall) {
+				for (var i = 2; i < process.argv.length; i++) {
+					var arg = process.argv[i];
+					if (arg.indexOf('http') !== -1) {
+						imageOptions.url = arg;
+					}
+					else if (arg.indexOf('=') !== -1) {
+						var param = arg.split('=');
+						imageOptions[param[0]] = param[1];
+					}
+					else if (arg.indexOf('.') !== -1) {
+						imageOptions.fileName = arg;
+					}
+				};
+				cbWaterfall(null, imageOptions);
+			},
+			// Render page
+			function (imageOptions, cbWaterfall) {
+				console.log('Render URL to image', imageOptions);
+				renderUrlToImage(imageOptions.url, imageOptions, cbWaterfall);
+			},
+			// Save to disk
+			function (imageBuffer, cbWaterfall) {
+				var fileName = imageOptions.fileName || 'file.png';
+				saveImageBufferToDisk(fileName, imageBuffer, cbWaterfall);
+			},
+		],
+		phantomInstance.exit
+	);
+};
+
+// Start server
+var startWebServer = function () {
+	var serverPort = process.env.PORT || 1337;
+	var server = http.createServer(onIncomingHTTPRequest);
+
+	server.on('close', function () {
+		phantomInstance.exit();
+		console.log('Closed');
+	});
+
+	server.listen(serverPort, function () {
+		console.log('Screenshooter service running on http://localhost:' + serverPort);
+	});
+};
+
 // Init PhantomJS
 phantom.create(function (err, ph) {
 	phantomInstance = ph;
-});
 
-
-// Start server
-var serverPort = process.env.PORT || 1337;
-var server = http.createServer(onIncomingHTTPRequest);
-
-server.on('close', function () {
-	phantomInstance.exit();
-	console.log('Closed');
-});
-
-server.listen(serverPort, function () {
-	console.log('Screenshooter running on http://localhost:' + serverPort);
+	if (process.argv.length >= 3) {
+		// Run as command line
+		processCommandLine();
+	}
+	else {
+		// Else web server
+		startWebServer();
+	}
 });
