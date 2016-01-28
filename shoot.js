@@ -17,6 +17,7 @@ var defaultOptions = {
 	browserWidth: 1024,
 	browserHeight: 1024,
 	gravity: 'North',
+	trim: false,
 };
 
 var MAX_PARALLELL_JOBS = (process.env['MAX_PARALLELL_JOBS'] ? parseInt(process.env['MAX_PARALLELL_JOBS']) : 3);
@@ -28,11 +29,14 @@ var workingOnQueue = false;
 var formatImage = function(imageData, imageOptions, callback){
 	var imageBuffer = new Buffer(imageData, 'base64');
 	// GraphicsMagick options: see http://aheckmann.github.io/gm/docs.html
-	gm(imageBuffer, 'image.' + imageOptions.imageFormat)
+	var imageObj = gm(imageBuffer, 'image.' + imageOptions.imageFormat)
 		.gravity(imageOptions.gravity)
 		.resize(imageOptions.imageWidth, imageOptions.imageHeight, '^')
-		.crop(imageOptions.imageWidth, imageOptions.imageHeight)
-		.toBuffer(imageOptions.imageFormat.toUpperCase(), callback);
+		.crop(imageOptions.imageWidth, imageOptions.imageHeight);
+	if (imageOptions.trim) {
+		imageObj.trim();
+	}
+	imageObj.toBuffer(imageOptions.imageFormat.toUpperCase(), callback);
 }
 
 // Take URL, deliver image buffer

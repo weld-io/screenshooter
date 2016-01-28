@@ -36,4 +36,7 @@ E.g. `http://localhost:1337/http://ljugare.com?imageFormat=png`
 * imageHeight (default: 240)
 * browserWidth (default: 1024)
 * browserHeight (default: 1024)
-* gravity (default: 'North') - how images are positioned/cropped
+* gravity (default: 'North') - how images are positioned/cropped*
+* trim (default: false) remove pixels of edge colors*
+
+*See [GraphicsMagick](http://www.graphicsmagick.org/GraphicsMagick.html) for details.
