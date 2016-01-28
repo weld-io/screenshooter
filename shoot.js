@@ -62,6 +62,7 @@ var renderUrlToImage = function (url, imageOptions, callback) {
 		// Open URL
 		function (page, cbWaterfall) {
 			logTimestamp('Open URL');
+			page.set('resourceTimeout', 30000); // 30 seconds
 			page.set('viewportSize', {
 				width: imageOptions.browserWidth,
 				height: imageOptions.browserHeight
