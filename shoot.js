@@ -183,6 +183,7 @@ var processCommandLine = function () {
 						imageOptions.fileName = arg;
 					}
 				};
+				imageOptions.fileName = imageOptions.fileName || 'screenshot.' + imageOptions.imageFormat;
 				cbWaterfall(null, imageOptions);
 			},
 			// Render page
@@ -192,8 +193,7 @@ var processCommandLine = function () {
 			},
 			// Save to disk
 			function (imageBuffer, cbWaterfall) {
-				var fileName = imageOptions.fileName || 'file.png';
-				saveImageBufferToDisk(fileName, imageBuffer, cbWaterfall);
+				saveImageBufferToDisk(imageOptions.fileName, imageBuffer, cbWaterfall);
 			},
 		]
 	);
