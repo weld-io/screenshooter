@@ -74,7 +74,16 @@ var renderUrlToImage = function (url, imageOptions, callback) {
 		// Render page to image
 		function (page, cbWaterfall) {
 			logTimestamp('Render page');
-			var renderImageFormat = imageOptions.imageFormat === 'jpg' ? 'JPEG' : imageOptions.imageFormat.toUpperCase();
+			var renderImageFormat;
+			if (imageOptions.imageFormat === 'jpg') {
+				renderImageFormat = 'JPEG';
+			}
+			else if (imageOptions.imageFormat) {
+				renderImageFormat = imageOptions.imageFormat.toUpperCase();
+			}
+			else {
+				renderImageFormat = 'PNG';
+			}
 			page.renderBase64(renderImageFormat, cbWaterfall);
 		},
 		// Format image
