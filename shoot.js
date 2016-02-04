@@ -74,17 +74,23 @@ var renderUrlToImage = function (url, imageOptions, callback) {
 		// Render page to image
 		function (page, cbWaterfall) {
 			logTimestamp('Render page');
-			var renderImageFormat;
-			if (imageOptions.imageFormat === 'jpg') {
-				renderImageFormat = 'JPEG';
+			try {
+				var renderImageFormat;
+				if (imageOptions.imageFormat === 'jpg') {
+					renderImageFormat = 'JPEG';
+				}
+				else if (imageOptions.imageFormat) {
+					renderImageFormat = imageOptions.imageFormat.toUpperCase();
+				}
+				else {
+					renderImageFormat = 'PNG';
+				}
+				page.renderBase64(renderImageFormat, cbWaterfall);
 			}
-			else if (imageOptions.imageFormat) {
-				renderImageFormat = imageOptions.imageFormat.toUpperCase();
+			catch (err) {
+				console.log('Error renderImageFormat', err, imageOptions);
+				cbWaterfall(err);
 			}
-			else {
-				renderImageFormat = 'PNG';
-			}
-			page.renderBase64(renderImageFormat, cbWaterfall);
 		},
 		// Format image
 		function (imageData, cbWaterfall) {
