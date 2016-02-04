@@ -62,7 +62,7 @@ var renderUrlToImage = function (url, imageOptions, callback) {
 		// Open URL
 		function (page, cbWaterfall) {
 			logTimestamp('Open URL');
-			page.set('resourceTimeout', 30000); // 30 seconds
+			page.set('resourceTimeout', 3000); // 3 seconds
 			page.set('viewportSize', {
 				width: imageOptions.browserWidth,
 				height: imageOptions.browserHeight
@@ -100,16 +100,17 @@ var processHTTPRequest = function (req, res, callback) {
 	var pageURL = req.url.slice(1);
 	var imageOptions = _.merge({}, defaultOptions);
 	_.merge(imageOptions, url.parse(req.url, true).query);
-	requestsBeingProcessed++;
-	console.log('processHTTPRequest:', requestsBeingProcessed, pageURL);
 
 	if (pageURL.indexOf('http') === -1) {
 		// No URL
 		if (callback) callback('Not valid URL');
 	}
 	else {
+		requestsBeingProcessed++;
+		console.log('Working on: %s (total %d)', pageURL, requestsBeingProcessed);
 		renderUrlToImage(pageURL, imageOptions, function (err, imageBuffer) {
 			requestsBeingProcessed--;
+			console.log('Done with: %s (total %d)', pageURL, requestsBeingProcessed);
 			if (!err) {
 				res.writeHead(200, {
 					'Content-Type': 'image/' + imageOptions.imageFormat,
