@@ -7,7 +7,7 @@
     "async": "^1.5.0",
     "gm": "1.20.0",
     "lodash": "^3.10.1",
-    "node-phantom-simple": "2.0.5"
+    "node-phantom-simple": "^2.2.4"
   },
   "devDependencies": {},
   "scripts": {
