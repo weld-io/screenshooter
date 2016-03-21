@@ -29,12 +29,18 @@ var workingOnQueue = false;
 var formatImage = function(imageData, imageOptions, callback){
 	var imageBuffer = new Buffer(imageData, 'base64');
 	// GraphicsMagick options: see http://aheckmann.github.io/gm/docs.html
-	var imageObj = gm(imageBuffer, 'image.' + imageOptions.imageFormat)
-		.gravity(imageOptions.gravity)
-		.resize(imageOptions.imageWidth, imageOptions.imageHeight, '^')
-		.crop(imageOptions.imageWidth, imageOptions.imageHeight);
+	var imageObj = gm(imageBuffer, 'image.' + imageOptions.imageFormat);
 	if (imageOptions.trim) {
+		// Trim: for symbols etc
 		imageObj.trim();
+		imageObj.gravity('Center');
+		imageObj.resize(imageOptions.imageWidth, imageOptions.imageHeight, '>');
+	}
+	else {
+		// No trim: for screens
+		imageObj.gravity(imageOptions.gravity);
+		imageObj.resize(imageOptions.imageWidth, imageOptions.imageHeight, '^');
+		imageObj.crop(imageOptions.imageWidth, imageOptions.imageHeight);
 	}
 	imageObj.toBuffer(imageOptions.imageFormat.toUpperCase(), callback);
 }
