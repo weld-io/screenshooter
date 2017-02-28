@@ -2,8 +2,14 @@
 
 Generates a screenshot of any web page - as API or command line. Powered by [PhantomJS](http://phantomjs.org).
 
-![Screenshooter](example.png)
+Made by the team at **Weld** ([www.weld.io](https://www.weld.io?utm_source=github-screenshooter)), the code-free app and web creation tool:
 
+[![Weld](https://s3-eu-west-1.amazonaws.com/weld-social-and-blog/gif/weld_explained.gif)](https://www.weld.io?utm_source=github-screenshooter)
+
+
+## Screenshot
+
+![Screenshooter](example.png)
 
 ## How to run it
 
