@@ -1,6 +1,6 @@
 # Screenshooter
 
-Generates a screenshot of any web page - as API or command line. Powered by [PhantomJS](http://phantomjs.org).
+Generates a screenshot of any web page - as API or command line. Powered by [Puppeteer](https://github.com/GoogleChrome/puppeteer).
 
 Made by the team at **Weld** ([www.weld.io](https://www.weld.io?utm_source=github-screenshooter)), the code-free app and web creation tool:
 
@@ -13,10 +13,8 @@ Made by the team at **Weld** ([www.weld.io](https://www.weld.io?utm_source=githu
 
 ## How to run it
 
-1. Install PhantomJS and get `phantomjs` in your PATH.
-2. Install GraphicsMagick.
-2. Install node packages: `npm install`
-3. Start Screenshooter with `npm start`
+1. Install dependencies: `yarn`
+2. Start Screenshooter with `yarn start`
 
 ![Codeship build status](https://www.codeship.io/projects/2fe0e610-b368-0131-9eae-664e1beed1ef/status)
 
@@ -42,7 +40,3 @@ E.g. `http://localhost:1337/http://ljugare.com?imageFormat=png`
 * imageHeight (default: 240)
 * browserWidth (default: 1024)
 * browserHeight (default: 1024)
-* gravity (default: 'North') - how images are positioned/cropped*
-* trim (default: false) remove pixels of edge colors*
-
-*See [GraphicsMagick](http://www.graphicsmagick.org/GraphicsMagick.html) for details.
