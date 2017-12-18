@@ -19,6 +19,7 @@ const defaultOptions = {
 };
 
 const MAX_PARALLELL_JOBS = (process.env['MAX_PARALLELL_JOBS'] ? parseInt(process.env['MAX_PARALLELL_JOBS']) : 3);
+const MAX_QUEUE_LENGTH = (process.env['MAX_QUEUE_LENGTH'] ? parseInt(process.env['MAX_QUEUE_LENGTH']) : 20);
 const VERBOSE_LOGGING = (process.env['VERBOSE_LOGGING'] === 'false' ? false : true);
 let requestsBeingProcessed = 0;
 const requestQueue = [];
@@ -96,8 +97,17 @@ const processHTTPRequest = (req, res, callback) => {
 
 };
 
+// Sometimes the queue builds up to impossible lenghts. Let's flush it until we figure out a better solution
+const flushQueueIfNeeded = () => {
+	if (requestQueue.length >= MAX_QUEUE_LENGTH) {
+		console.log('Maximum queue length of %d reached. Flushing.', requestQueue.length);
+		requestQueue.length = 0;
+	}
+};
+
 // Take a request object and work on it
 const addToRequestQueue = (req, res) => {
+	flushQueueIfNeeded();
 	requestQueue.push({ req, res });
 	// Start working on queue if not doing it already
 	if (!workingOnQueue) {
