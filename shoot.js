@@ -40,8 +40,8 @@ const renderUrlToImage = (url, imageOptions, callback) => {
 		const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
 		const page = await browser.newPage();
 		page.setViewport({
-			width: imageOptions.browserWidth,
-			height: imageOptions.browserHeight
+			width: parseInt(imageOptions.browserWidth),
+			height: parseInt(imageOptions.browserHeight)
 		});
 		await page.goto(url, {waitUntil: 'networkidle2'});
 		const screenshot = await page.screenshot({
