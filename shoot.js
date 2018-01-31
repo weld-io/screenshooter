@@ -18,8 +18,6 @@ const defaultOptions = {
 	trim: false,
 };
 
-const MAX_PARALLELL_JOBS = (process.env['MAX_PARALLELL_JOBS'] ? parseInt(process.env['MAX_PARALLELL_JOBS']) : 3);
-const MAX_QUEUE_LENGTH = (process.env['MAX_QUEUE_LENGTH'] ? parseInt(process.env['MAX_QUEUE_LENGTH']) : 20);
 const VERBOSE_LOGGING = (process.env['VERBOSE_LOGGING'] === 'false' ? false : true);
 let requestsBeingProcessed = 0;
 const requestQueue = [];
@@ -97,48 +95,11 @@ const processHTTPRequest = (req, res, callback) => {
 
 };
 
-// Sometimes the queue builds up to impossible lenghts. Let's flush it until we figure out a better solution
-const flushQueueIfNeeded = () => {
-	if (requestQueue.length >= MAX_QUEUE_LENGTH) {
-		console.log('Maximum queue length of %d reached. Flushing.', requestQueue.length);
-		requestQueue.length = 0;
-	}
-};
-
-// Take a request object and work on it
-const addToRequestQueue = (req, res) => {
-	flushQueueIfNeeded();
-	requestQueue.push({ req, res });
-	// Start working on queue if not doing it already
-	if (!workingOnQueue) {
-		workingOnQueue = true;
-		// While: 1) there is spare capacity, and 2) there is work in the queue
-		async.whilst(
-			() => requestsBeingProcessed < MAX_PARALLELL_JOBS && requestQueue.length > 0,
-			callback => {
-				console.log('Working on: %d, in queue: %d', requestsBeingProcessed, requestQueue.length);
-				const firstRequest = requestQueue.shift();
-				processHTTPRequest(firstRequest.req, firstRequest.res);
-				callback(null);
-			},
-			(err, results) => {
-				console.log('Done. Working on: %d, in queue: %d', requestsBeingProcessed, requestQueue.length);
-				workingOnQueue = false;
-			}
-		);		
-	}
-};
-
 // Process the incoming request if not already processing
 // Else put into queue
 const onIncomingHTTPRequest = (req, res) => {
 	console.log('Incoming request:', req.url);
-	if (requestsBeingProcessed < MAX_PARALLELL_JOBS) {
-		processHTTPRequest(req, res); // Process immediately
-	}
-	else {
-		addToRequestQueue(req, res); // Add to queue
-	}
+	processHTTPRequest(req, res); // Process immediately
 };
 
 const processCommandLine = () => {
