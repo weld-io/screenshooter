@@ -22,7 +22,10 @@ const VERBOSE_LOGGING = (process.env['VERBOSE_LOGGING'] === 'false' ? false : tr
 let requestsBeingProcessed = 0;
 const requestQueue = [];
 let workingOnQueue = false;
-
+let browser;
+(async () => {
+	browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+})();
 
 // Take URL, deliver image buffer
 const renderUrlToImage = (url, imageOptions, callback) => {
@@ -36,7 +39,6 @@ const renderUrlToImage = (url, imageOptions, callback) => {
 	}
 
 	(async () => {
-		const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
 		const page = await browser.newPage();
 		page.setViewport({
 			width: parseInt(imageOptions.browserWidth),
@@ -46,7 +48,7 @@ const renderUrlToImage = (url, imageOptions, callback) => {
 		const screenshot = await page.screenshot({
 			type: renderImageFormat
 		});
-		browser.close();
+		page.close();
 		return screenshot;
 	})().then(screenshot => {
 		callback(null, screenshot);
