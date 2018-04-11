@@ -23,9 +23,6 @@ let requestsBeingProcessed = 0;
 const requestQueue = [];
 let workingOnQueue = false;
 let browser;
-(async () => {
-	browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
-})();
 
 // Take URL, deliver image buffer
 const renderUrlToImage = (url, imageOptions, callback) => {
@@ -151,6 +148,9 @@ if (process.argv.length >= 3) {
 	processCommandLine();
 }
 else {
-	// Else web server
-	startWebServer();
+	// Else web server after starting browser
+	(async () => {
+		browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+		startWebServer();
+	})();
 }
