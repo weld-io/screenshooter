@@ -2,3 +2,4 @@ node_modules/
 images/
 
 batch.sh
+yarn-error.log
