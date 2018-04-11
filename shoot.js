@@ -37,6 +37,14 @@ const renderUrlToImage = (url, imageOptions, callback) => {
 
 	(async () => {
 		const page = await browser.newPage();
+		page.on("pageerror", function(err) {
+			console.log("Page error: " + err.toString());
+			page.close();
+		});
+		page.on("error", function(err) {
+			console.log("Error: " + err.toString());
+			page.close();
+		});
 		page.setViewport({
 			width: parseInt(imageOptions.browserWidth),
 			height: parseInt(imageOptions.browserHeight)
