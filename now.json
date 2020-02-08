@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "/api/image.js", "use": "@now/node", "config": { "maxLambdaSize": "40mb" } }
+  ],
+  "routes": [
+    { "src": "/?", "dest": "/api/image.js" }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD": "true"
+  }
+}

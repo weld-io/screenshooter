@@ -2,32 +2,33 @@
   "name": "screenshooter",
   "version": "0.2.0",
   "description": "Generates a screenshot of any web page - as API or command line.",
-  "main": "shoot.js",
-  "dependencies": {
-    "async": "^1.5.0",
-    "lodash": "^3.10.1",
-    "puppeteer": "^1.2.0"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "start": "node shoot.js",
-    "test": "make test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/hankmander/screenshooter.git"
-  },
+  "author": "Weld.io",
+  "license": "ISC",
+  "main": "api/image.js",
   "keywords": [
     "screenshot",
     "web"
   ],
-  "author": "Weld.io",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/hankmander/screenshooter/issues"
+  "homepage": "https://github.com/weld-io/screenshooter",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/weld-io/screenshooter.git"
   },
-  "homepage": "https://github.com/hankmander/screenshooter",
-  "engines": {
-    "node": "^8.9.3"
+  "bugs": {
+    "url": "https://github.com/weld-io/screenshooter/issues"
+  },
+  "scripts": {
+    "now": "now dev --listen 3337",
+    "deploy": "now --prod",
+    "lint": "standard",
+    "fix": "standard --fix"
+  },
+  "dependencies": {
+    "chrome-aws-lambda": "^2.0.2",
+    "puppeteer-core": "^2.1.1"
+  },
+  "devDependencies": {
+    "puppeteer": "^2.1.1",
+    "standard": "^14.3.1"
   }
 }

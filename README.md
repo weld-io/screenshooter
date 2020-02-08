@@ -19,22 +19,23 @@ Made by the team at **Weld** ([www.weld.io](https://www.weld.io?utm_source=githu
 
 ## How to use it
 
-Browser: Open your favorite browser and take a screenshot like this: `http://localhost:1337/http://ljugare.com`
+Browser: Open your favorite browser and take a screenshot like this: `http://localhost:3337/?url=https://ljugare.com`
 
 Embed a screenshot directly into an HTML `img` tag:
 
-	<img src="http://localhost:1337/http://www.google.com" alt="Google’s website">
+	<img src="http://localhost:3337/?url=https://www.google.com" alt="Google’s website">
 
 ### Parameters
 
-E.g. `http://localhost:1337/http://ljugare.com?imageFormat=png`
+E.g. `http://localhost:3337/?url=https://ljugare.com?imageFormat=png`
 
-* `imageFormat`: (default: 'jpg')
-* `imageWidth`: (default: 240)
-* `imageHeight`: (default: 240)
-* `browserWidth`: (default: 1024)
-* `browserHeight`: (default: 1024)
+* `url` (required)
+* `format`: `jpeg` (default) or `png`
+* `width`: default 800
+* `height`: default 600
+* `dpr`: deviceScaleFactor, default is 1.0. Note you can use this as a zoom factor; the browser canvas has the same size, but the output image has different size.
+* `time`: milliseconds or `networkidle0`
 
-## Command line
+## Command line (not currently supported)
 
-	node shoot.js http://ljugare.com myimage.jpg imageWidth=500 imageHeight=400
+	node api/image.js http://ljugare.com myimage.jpg imageWidth=500 imageHeight=400
