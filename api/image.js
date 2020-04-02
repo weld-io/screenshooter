@@ -22,7 +22,7 @@ const getImage = async function (req, res) {
     // Get image
     const image = await fetchImageWithPuppeteer(pageUrl, options)
     res.setHeader('content-type', 'image/' + (options.format || 'jpeg'))
-    res.setHeader('cache-control', 'public, max-age=86400') // 1 day
+    res.setHeader('cache-control', 'public, max-age=31536000') // 1 year
     res.end(image)
   } catch (err) {
     res.statusCode = 500
