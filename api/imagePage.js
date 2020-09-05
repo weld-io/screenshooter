@@ -1,6 +1,6 @@
 //
 // Name:    imagePage.js
-// Purpose: Controller and routing for full image
+// Purpose: Return HTML page of an image in full screen
 // Creator: Tom Söderlund
 //
 
@@ -22,6 +22,7 @@ const getImage = async function (req, res) {
 <title>${imageUrl}</title>
 <meta charSet="utf-8"/>
 <meta name="viewport" content="initial-scale=1.0, width=device-width"/>
+<meta name="x-headers-host" content="${req.headers['x-forwarded-proto']},${req.headers['x-forwarded-host']},${req.headers.host}"/>
 <style type="text/css">
   * {
     margin: 0;

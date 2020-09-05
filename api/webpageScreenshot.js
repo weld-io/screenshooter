@@ -1,6 +1,6 @@
 //
 // Name:    webpageScreenshot.js
-// Purpose: Controller and routing for full image
+// Purpose: Return screenshot of a web page
 // Creator: Tom Söderlund
 //
 
