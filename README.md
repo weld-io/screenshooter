@@ -13,13 +13,13 @@ Made by the team at **Weld** ([www.weld.io](https://www.weld.io?utm_source=githu
 ## How to run it
 
 1. Install dependencies: `yarn`
-2. Start Screenshooter with `yarn start`
+2. Start Screenshooter with `yarn dev`
 
 ![Codeship build status](https://www.codeship.io/projects/2fe0e610-b368-0131-9eae-664e1beed1ef/status)
 
 ## How to use it
 
-Browser: Open your favorite browser and take a screenshot like this: `http://localhost:3337/?url=https://ljugare.com`
+Browser: Open your favorite browser and take a screenshot like this: `http://localhost:3337/?url=https://www.google.com`
 
 Embed a screenshot directly into an HTML `img` tag:
 
@@ -27,7 +27,7 @@ Embed a screenshot directly into an HTML `img` tag:
 
 ### Parameters
 
-E.g. `http://localhost:3337/?url=https://ljugare.com?imageFormat=png`
+E.g. `http://localhost:3337/?url=https://www.google.com?imageFormat=png`
 
 * `url` (required)
 * `format`: `jpeg` (default) or `png`
@@ -38,4 +38,4 @@ E.g. `http://localhost:3337/?url=https://ljugare.com?imageFormat=png`
 
 ## Command line (not currently supported)
 
-	node api/image.js http://ljugare.com myimage.jpg imageWidth=500 imageHeight=400
+	node api/webpageScreenshot.js http://www.google.com myimage.jpg imageWidth=500 imageHeight=400

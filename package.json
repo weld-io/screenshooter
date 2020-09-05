@@ -4,7 +4,7 @@
   "description": "Generates a screenshot of any web page - as API or command line.",
   "author": "Weld.io",
   "license": "ISC",
-  "main": "api/image.js",
+  "main": "api/webpageScreenshot.js",
   "keywords": [
     "screenshot",
     "web"
@@ -18,7 +18,7 @@
     "url": "https://github.com/weld-io/screenshooter/issues"
   },
   "scripts": {
-    "now": "now dev --listen 3337",
+    "dev": "now dev --listen 3337",
     "deploy": "now --prod",
     "lint": "standard",
     "fix": "standard --fix"
