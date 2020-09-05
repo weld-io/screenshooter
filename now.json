@@ -2,10 +2,12 @@
   "version": 2,
   "builds": [
     { "src": "/api/webpageScreenshot.js", "use": "@now/node", "config": { "maxLambdaSize": "40mb" } },
+    { "src": "/api/imageScreenshot.js", "use": "@now/node", "config": { "maxLambdaSize": "40mb" } },
     { "src": "/api/imagePage.js", "use": "@now/node", "config": { "maxLambdaSize": "40mb" } }
   ],
   "routes": [
     { "src": "/?", "dest": "/api/webpageScreenshot.js" },
+    { "src": "/image?", "dest": "/api/imageScreenshot.js" },
     { "src": "/imagePage?", "dest": "/api/imagePage.js" }
   ],
   "env": {

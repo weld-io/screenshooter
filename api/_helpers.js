@@ -19,6 +19,8 @@ const parseRequestQuery = url => (url.split('?')[1] || '')
     return result
   }, {})
 
+const queryObjectToString = queryObject => Object.keys(queryObject).reduce((result, key) => (queryObject[key] === undefined) ? result : result + (result.length ? '&' : '?') + key + '=' + queryObject[key], '')
+
 const fetchPageWithPuppeteer = async function (pageUrl, { loadExtraTime, bodyOnly }) {
   console.log(`Fetch page with Puppeteer: "${pageUrl}"`, { loadExtraTime, bodyOnly })
 
@@ -93,6 +95,7 @@ module.exports = {
 
   parseRequestParams,
   parseRequestQuery,
+  queryObjectToString,
 
   fetchPageWithPuppeteer,
   fetchImageWithPuppeteer

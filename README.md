@@ -15,8 +15,6 @@ Made by the team at **Weld** ([www.weld.io](https://www.weld.io?utm_source=githu
 1. Install dependencies: `yarn`
 2. Start Screenshooter with `yarn dev`
 
-![Codeship build status](https://www.codeship.io/projects/2fe0e610-b368-0131-9eae-664e1beed1ef/status)
-
 ## How to use it
 
 Browser: Open your favorite browser and take a screenshot like this: `http://localhost:3337/?url=https://www.google.com`
@@ -35,6 +33,18 @@ E.g. `http://localhost:3337/?url=https://www.google.com?imageFormat=png`
 * `height`: default 450
 * `dpr`: deviceScaleFactor, default is 1.0. Note you can use this as a zoom factor; the browser canvas has the same size, but the output image has different size.
 * `time`: milliseconds or `networkidle0`
+
+Extra options for `/image` (and `/imagePage`):
+
+* `backgroundColor`: default 'black'
+* `fit`: default 'cover', 
+* `position`: default 'center'
+
+## All routes:
+
+* `http://localhost:3337/?url=` (`/api/webpageScreenshot.js`)
+* `http://localhost:3337/image?url=` (`/api/imageScreenshot.js`)
+* `http://localhost:3337/imagePage?url=` (`/api/imagePage.js`) – Renders a HTML page that is used by `/image` route.
 
 ## Command line (not currently supported)
 
