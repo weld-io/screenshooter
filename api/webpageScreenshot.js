@@ -1,5 +1,5 @@
 //
-// Name:    image.js
+// Name:    webpageScreenshot.js
 // Purpose: Controller and routing for full image
 // Creator: Tom Söderlund
 //
